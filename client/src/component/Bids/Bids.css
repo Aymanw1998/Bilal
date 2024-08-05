@@ -1,0 +1,73 @@
+.tableB {
+  border-collapse: collapse;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+}
+
+.tableB td,.tableB th {
+  border: 1px solid rgb(190,190,190);
+  padding: 10px 20px;
+}
+  
+.tableB th {
+  background-color: rgb(235,235,235);
+}
+  
+.tableB td {
+  text-align: center;
+}
+.tableB input, .tableP textarea {
+  border: 2px solid black;
+  border-radius: 4px;
+} 
+
+.tableB .dis input {
+    width:50%;
+}
+caption {
+  padding: 10px;
+}
+
+.btn {
+  border: none;
+  background-color: inherit;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Green */
+.success {
+  background-color: #0f0f0d;
+  color: rgb(6, 250, 6);
+}
+
+.success:hover {
+  background-color: #04AA6D;
+  color: rgb(145, 230, 145);
+}
+
+/* Red */
+.danger {
+  color: red;
+}
+
+.danger:hover {
+  background: #f44336;
+  color: white;
+}
+
+/* Orange */
+.warning {
+  color: orange;
+}
+
+.warning:hover {
+  background: #ff9800;
+  color: white;
+}
+
+.save {
+font-size: 50px;
+}

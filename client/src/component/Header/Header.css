@@ -1,0 +1,29 @@
+header{
+    direction: rtl;
+    /* position: fixed; */
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: rgb(0, 238, 255);
+    text-align: center;
+}
+ul {
+    /* overflow-x:hidden; */
+    white-space:nowrap; 
+}
+li {
+    display:inline; 
+    padding: 10px;
+}
+
+.selected-no {
+    background-color: rgb(0, 238, 255);
+}
+.selected {
+    background-color: chartreuse;
+}
+
+.navbar-header{
+    display: flex;
+    justify-content: space-between;
+}
