@@ -8,6 +8,7 @@ import BackIcon from "../../images/back.png"
 import {useReactToPrint} from 'react-to-print';
 
 import Printer from "./../../images/printer.png"
+import Logo from "../../images/logo.png"
 
 const ComponentToPrint = forwardRef((props, ref) => {
    
@@ -68,24 +69,25 @@ const ComponentToPrint = forwardRef((props, ref) => {
     <>
     <div className="Doc" ref={ref}>
         <header className="header">
-            <h1>הצעת מחיר מס #{param.id}</h1>  
-            <div className="dateT">
-                <h1 className="dates">מתאריך: {dateFrom} לתאריך: {dateTo}</h1>
-            </div>  
+            <img src={Logo} width={300}/> 
         </header>
+        <h1 className="title">הצעת מחיר מס #{param.id}</h1> 
         <div className="groupToForm">
             <side className="from">
-                <h1>מאת</h1>
-                <p>בלאל זינאתי</p>
-                <p>050-7903256</p>
-                <p>לוד, המרכז,ישראל</p>
-
+                <h1>עבור</h1>
+                <p>שם לקוח: <b>{customerName}</b></p>
+                <p>מספר טלפון:<b>{customerID}</b></p>
+                <p>תאריך: <b>{dateFrom}</b></p>
+                <p>ההצעה תקפה ל: <b>{dateTo}</b></p>
             </side>
             <side className="to">
-                <h1>עבור</h1>
-                <p>{customerID}</p>
-                <p>{customerName}</p>
-                <p></p>
+                <h1>מאת</h1>
+                <p><b>ב.ח. לוחות חשמל</b></p>
+                <p>עוסק מורשה:<b>558562096</b></p>
+                <p>כתובת: <b>שד צה"ל 23, לוד</b></p>
+                <p>טלפון: <b><a href="tel:+9720507903256">0507903256</a> | <a href="tel:+9720522529613">0522529613</a></b></p>
+                <p>דוא"ל: <b><a href="mailto:bilalzinaty@gmail.com">bilalzinaty@gmail.com</a></b></p>
+
             </side>
         </div>
         <div className="tableBS">
@@ -149,6 +151,11 @@ const ComponentToPrint = forwardRef((props, ref) => {
                     <td>{(((priceTotal - (priceTotal * discountDis / 100)).toFixed(2))*1.17).toFixed(2)}₪</td>
                 </tr>
             </table>
+            
+            <div className="footer">
+                <hr></hr>
+                <p><b>הערה:</b> ההצעה תקפה למשך 14 יום מיום יצירת ההצעה</p>
+            </div>
         </div>
     </div>
     </>

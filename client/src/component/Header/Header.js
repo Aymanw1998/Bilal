@@ -25,15 +25,15 @@ function Header() {
     }
     return(
         <header>
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
+            <nav className="navbar navbar-default">
+                <div className="container-fluid">
                     {
-                        <div class="navbar-header">
-                        <button><img src={Logo} width={100} onClick={handleHome}/></button>
+                        <div className="navbar-header">
+                        <button><img src={Logo} width={200} onClick={handleHome}/></button>
                         {!(["/products", "/bids"]).includes(window.location.pathname) && <button><img src={BackIcon} width={100} onClick={handleBack}/></button>}
                         </div>
                     }
-                    <ul class="nav navbar-nav">
+                    <ul className="nav navbar-nav">
                         {Menus.map((menu,i)=>(<li key={i}><a href={menu.url} className={menu.url == window.location.pathname ? "selected" : "selected-no"}>{menu.name}</a></li>))}
                     </ul>
                 </div>

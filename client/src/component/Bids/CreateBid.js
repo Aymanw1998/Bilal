@@ -7,6 +7,7 @@ import { BidDetailsService } from "../../Service/bidDetails.service"
 
 import Header from "../Header/Header"
 import Footer from "../Footer/Footer"
+import Loader from "../Loader/Loader"
 const CreateBid = () => {
     const navigate = useNavigate();
     const param = useParams();
@@ -166,6 +167,7 @@ const CreateBid = () => {
     
 
     const createB = async() => {
+        setIsLoading(true);
         console.log("save bid");
         //save bid
         const data = {
@@ -198,6 +200,7 @@ const CreateBid = () => {
             else{
                 alert("שגיאה בעית עדכון הצעה")
             }
+            setIsLoading(false);
             return;
         }
 
@@ -218,12 +221,14 @@ const CreateBid = () => {
             TotalPrice: item.totalPrice,
         }
         let result = await BidDetailsService.createBD(data2);
+        setIsLoading(false);
         if(result.err){
             alert("שגיאה בעית שמירת פריטי ההצעה")
             return;
         }
 
-    });
+        });
+        setIsLoading(false);
     navigate(-1);
     }
 
@@ -279,7 +284,7 @@ const CreateBid = () => {
     }
 
     const pricesChange = ({dis = 0}) => {
-        console.log("pricesChange",inputDiscount)
+        console.log("pricesChange",arrayProduct)
         let allprice = 0;
 
         arrayProduct.map(item => {allprice += parseInt(item.totalPrice)});
@@ -303,21 +308,39 @@ const CreateBid = () => {
     useEffect(()=>{
         console.log("inputs", inputTotalPrice, inputDiscount, inputVAT, inputFinishPrice )
     },[inputTotalPrice, inputDiscount, inputVAT, inputFinishPrice])
+
+    const putFromArray = async(iid) => {
+        let pp = [];
+        arrayProduct.map((ap) => { 
+            if(ap.id != iid)
+            {
+                pp.push(ap);
+            }
+            else{
+                ap.price = 0; ap.amount = 0;ap.totalPrice=0;
+            }
+            });
+        console.log("pp",pp);
+        await setArrayProduct(pp);
+        pricesChange({dis: inputDiscount.dis});
+    }
     return(
         <>
+        {isLoading &&<Loader/>}
         <Header/>
         <h1 className="sch-title-big">הצעת מחיר מס <label>{inputID}</label>#     <button className={`btn ${ param.id != 0 ? "warning" : "success"} save`} onClick={createB}>{param.id != 0 ? "עדכן":"שמור"}</button></h1>
         
         <div className="groupCustomer">
             <h2>עבור</h2>
             <table className="tableB">
-                <tr>
-                    <th>תעודת זיהוי לקוח</th>
-                    <th><input type="text" id="id" name="id" value={inputCustomerID} onChange={e => setInputCustomerID(e.target.value)}></input></th>
-                </tr>
+                
                 <tr>
                     <th>שם לקוח</th>
                     <th><input type="text" id="id" name="id" value={inputCustomerName} onChange={e => setInputCustomerName(e.target.value)}></input></th>
+                </tr>
+                <tr>
+                    <th>מספר טלפון</th>
+                    <th><input type="text" id="id" name="id" value={inputCustomerID} onChange={e => setInputCustomerID(e.target.value)}></input></th>
                 </tr>
             </table>
         </div>
@@ -357,6 +380,7 @@ const CreateBid = () => {
                 <th scope="col">מחיר ליחידה</th>
                 <th scope="col">כמות</th>
                 <th scope="col">מחיר מוצר כולל</th>
+                
             </tr>
             {
             arrayProduct && arrayProduct.map((item,i) => {
@@ -368,6 +392,7 @@ const CreateBid = () => {
                     <td>{item.price}₪</td>
                     <td><input type="text" value={item.amount} onChange={(e)=>{Calc(i,e)}}></input></td>
                     <td><label>{item.totalPrice}₪</label></td>
+                    <td><button onClick={()=>{putFromArray(item.id)}}>x</button></td>
                     </tr>)
                 })
             }
