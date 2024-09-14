@@ -18,7 +18,7 @@ html {
 }
   
 .tableP td {
-  text-align: center;
+  text-align: right;
 }
   
 .tableP input, .tableP textarea {
@@ -32,7 +32,6 @@ html {
   .btn {
     border: none;
     background-color: inherit;
-    padding: 14px 28px;
     font-size: 16px;
     cursor: pointer;
     display: inline-block;
@@ -70,4 +69,33 @@ html {
 
   .sch-title-big{
     font-size: 50px;
+  }
+
+  @media (max-width: 767px) {
+    .tableP {
+      width:90%;
+    }
+    .tableP thead{
+      display: none;
+    }
+    .tableP tbody, .tableP tr, .tableP td {
+      display: block;
+      width: 100%;
+    }
+    .tableP tr{
+      margin-bottom: 20px;
+      background-color: aliceblue;
+    }
+    .tableP td:first-child{
+      padding-top: .5em;
+    }
+    .tableP td:last-child{
+      padding-bottom: .5em;
+    }
+    .tableP td:before{
+      content: attr(data-th);
+      font-weight: bold;
+      width: 6.5em;
+      display: inline-block;
+    }
   }

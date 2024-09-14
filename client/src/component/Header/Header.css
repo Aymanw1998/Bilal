@@ -7,6 +7,9 @@ header{
     background-color: rgb(0, 238, 255);
     text-align: center;
 }
+.logo {
+    text-align: center;
+}
 ul {
     /* overflow-x:hidden; */
     white-space:nowrap; 

@@ -13,9 +13,12 @@ const See = () => {
     const navigate = useNavigate();
     const location = useLocation()
     useEffect(()=>{
-        if(location.pathname == "/") 
-            navigate("/products");
-        },[]);
+        if(location.pathname == "/" || location.pathname == "/bh") 
+            navigate("/bh/products");
+        
+        else if(location.pathname == "/zn")
+            navigate("/zn/products")
+      },[]);
       return(<></>);
 }
 const  App = () => {
@@ -25,10 +28,15 @@ const  App = () => {
       <BrowserRouter>
         <See/>
         <Routes>
-          <Route path="/products" element={<Products/>}/>
-          <Route path="/bids" element={<Bids/>}/>
-          <Route path="/bids/:id" element={<CreateBid/>}/>
-          <Route path="/static/:id" element={<BidStatic/>}/>
+          <Route path="/bh/products" element={<Products/>}/>
+          <Route path="/bh/bids" element={<Bids/>}/>
+          <Route path="/bh/bids/:id" element={<CreateBid/>}/>
+          <Route path="/bh/static/:id" element={<BidStatic/>}/>
+
+          <Route path="/zn/products" element={<Products/>}/>
+          <Route path="/zn/bids" element={<Bids/>}/>
+          <Route path="/zn/bids/:id" element={<CreateBid/>}/>
+          <Route path="/zn/static/:id" element={<BidStatic/>}/>
         </Routes>
         
       </BrowserRouter>

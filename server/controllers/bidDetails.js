@@ -5,11 +5,11 @@ const BidDetail = require('../models/bidDetails');
 
 /**
  * @desc Get all BidDetails
- * @route GET /api/bidDetail/
+ * @route GET /api/bidDetail/:from
  * @access Public
  */
 const getBidDetails = asyncHandler(async(req, res, next) => {
-    const bidDetails = await BidDetail.find();
+    const bidDetails = await BidDetail.find({from: req.params.from});
     console.log("BidDetails",bidDetails);
     if(!bidDetails)
         return next(new errorResponse('DONT HAVE BidDetails'));
@@ -26,7 +26,7 @@ const getBidDetails = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const getBidDetail = asyncHandler(async(req, res, next) => {
-    const bidDetail = await BidDetail.find({idBid: req.params.id});
+    const bidDetail = await BidDetail.find({idBid: req.params.id,from: req.params.from});
     console.log("BidDetail", bidDetail);
     if(bidDetail == null)
         return next(new errorResponse(`Dont have BidDetail with id :[${req.params.id}]`));
@@ -45,7 +45,10 @@ const getBidDetail = asyncHandler(async(req, res, next) => {
 const createBidDetail = asyncHandler(async(req, res, next) => {
     console.log("create new BidDetail", req.body)
     const Product = require("./../models/product");
-    const product = Product.findById(req.body.idProduct);
+
+
+    const product = (req.body.from == "zn")? await Product.productzn.findById(req.body.idProduct) : await Product.productbh.findById(req.body.idProduct);
+    
     if(!product) {
         return next(new errorResponse(`The Product with id :[${req.body.idProduct}] is not exist`));
     }
@@ -54,6 +57,7 @@ const createBidDetail = asyncHandler(async(req, res, next) => {
         idProduct: req.body.idProduct, 
         amount: req.body.amount ,
         TotalPrice: (parseInt(product.price) * parseInt(req.body.amount)).toString(),
+        from: req.body.from,
     }
 
     let bidDetail = await BidDetail.findOne({idBid: bidDetailSchema.idBid, idProduct: bidDetailSchema.idProduct});
@@ -82,6 +86,7 @@ const updateBidDetail = asyncHandler(async(req, res, next) => {
         idProduct: req.body.idProduct, 
         amount: req.body.amount ,
         TotalPrice: (parseInt(product.price) * parseInt(req.body.amount)).toString(),
+        from: req.body.from,
     }
     console.log(bidDetailSchema);
     let bidDetail = await BidDetail.findOne({idBid: bidDetailSchema.idBid, idProduct: bidDetailSchema.idProduct});
@@ -99,14 +104,14 @@ const updateBidDetail = asyncHandler(async(req, res, next) => {
 
 /**
  * @desc Delete BidDetail
- * @route DELETE /api/bidDetail/:id
+ * @route DELETE /api/bidDetail//:from/:id
  * @access Public
  */
 const deleteBidDetail = asyncHandler(async(req, res, next) => {
-    let bidDetail = await BidDetail.findOne({idBid: req.params.id});
+    let bidDetail = await BidDetail.findOne({idBid: req.params.id, from: req.params.from});
     if(!bidDetail)
         return next(new errorResponse(`The BidDetail with id :[${req.params.id}] is not exist`));
-    await BidDetail.deleteMany({idBid: req.params.id})
+    await BidDetail.deleteMany({idBid: req.params.id, from: req.body.from})
     .then(async()=>{
         const bidDetails = await BidDetail.find();
     return res.status(200).json({

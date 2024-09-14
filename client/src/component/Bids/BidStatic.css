@@ -9,15 +9,16 @@
 }
 
 .title{
-    /* background-color: rgb(225, 225, 225); */
-    /* width:100%; */
-    padding-top: 20px;
-    font-size: 40px;
-    margin-right: 80px;
+    font-size: 30px;
+    margin-right: 90px;
 }
 .header img{
   display: block;
   margin: 0 auto;
+}
+.logo{
+  width: 600px;
+  height: 150px;
 }
 .groupToForm{
     display: flex;
@@ -78,7 +79,6 @@ p {
 .btn {
     border: none;
     background-color: inherit;
-    padding: 14px 28px;
     font-size: 32px;
     cursor: pointer;
     display: inline-block;
@@ -86,13 +86,12 @@ p {
   
   /* Green */
   .success {
-    background-color: #0f0f0d;
     color: rgb(6, 250, 6);
   }
   
   .success:hover {
-    background-color: #04AA6D;
-    color: rgb(145, 230, 145);
+    background-color: rgb(6, 250, 6);;
+    color: rgb(235, 235, 235);
   }
 
   .dates{

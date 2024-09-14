@@ -4,9 +4,9 @@ const router = express.Router();
 const {getBids, getBid, createBid, updateBid, deleteBid, } = require('../controllers/bid');
 
 
-router.route('/').get(getBids);
-router.route('/:id').get(getBid);
+router.route('/:from').get(getBids);
+router.route('/:from/:id').get(getBid);
 router.route('/').post(createBid);
 router.route('/:id').put(updateBid);
-router.route('/:id').delete(deleteBid);
+router.route('/:from/:id').delete(deleteBid);
 module.exports = router;

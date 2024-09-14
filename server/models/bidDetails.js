@@ -17,8 +17,11 @@ const bidSchema = new mongoose.Schema({
   TotalPrice:{
     type:String,
     required: true,
+  },
+  from: {
+    type:String,
+    required: true,
   }
-
 });
 
 // Create the bid model

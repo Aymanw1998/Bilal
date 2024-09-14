@@ -29,11 +29,14 @@ const bidSchema = new mongoose.Schema({
   customer:{
     id: {type:String},
     name:{type:String},
+  },
+  from:{
+    type: String,
+    required: true,
   }
-
 });
 
 // Create the bid model
-const bid = mongoose.model('bid', bidSchema);
-
-module.exports = bid;
+const bidzn = mongoose.model('bidzn', bidSchema);
+const bidbh = mongoose.model('bidbh', bidSchema);
+module.exports = {bidzn,bidbh};

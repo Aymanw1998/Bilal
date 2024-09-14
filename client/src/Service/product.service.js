@@ -3,12 +3,13 @@ import { URL } from '../Utils/globalVaribals';
 const PRODUCT = `${URL}/api/product`;
 
 // get one or all
-const getP = async(id = null) => {
+const getP = async(id = null, from) => {
     console.log("getP id", id)
     if(id)
     {
         try{
-            const res = await axios.get(`${PRODUCT}/${id}`);
+            const body = {from:from}
+            const res = await axios.get(`${PRODUCT}/${from}/${id}`);
             const result = {data: res.data.product, err: false };
             console.log("result", result);
             return result;
@@ -20,8 +21,9 @@ const getP = async(id = null) => {
     }
     else{
         try{
-            console.log("get PRODUCT get " + PRODUCT);
-            const res = await axios.get(`${PRODUCT}`);
+            const body = {from:from};
+            console.log("get PRODUCT get " + PRODUCT+"/"+from);
+            const res = await axios.get(`${PRODUCT}/${from}`);
             const result = {data: res.data.products, err: false };
             console.log("result", result);
             return result;
@@ -59,9 +61,9 @@ const updateP = async(id, data) => {
     }
 }
 
-const deleteP = async(id) => {
+const deleteP = async(id, from) => {
     try{
-        const res = await axios.delete(`${PRODUCT}/${id}`);
+        const res = await axios.delete(`${PRODUCT}/${from}/${id}`);
         const result = {data: res.data.product, err: false };
         console.log("result", result);
         return result;

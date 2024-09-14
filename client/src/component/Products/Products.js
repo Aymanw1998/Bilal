@@ -1,13 +1,14 @@
 import React, {useState,useEffect}from "react"
+import { useLocation } from "react-router-dom"
 import "./Products.css"
 import {ProductService} from "../../Service/product.service"
-
+import {FilePlus, Pen, Trash} from "react-bootstrap-icons"
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import Search from "../Search/Search";
 import Loader from "../Loader/Loader";
 const Products = () => {
-
+    const location = useLocation();
     const [open, setOpen] = React.useState(false);
  
     
@@ -38,10 +39,12 @@ const Products = () => {
         try{
             setIsLoading(true);
             console.log("get all url");
-            let c = await ProductService.getP(null);
+            console.log(location.pathname, location.pathname.includes("/zn")? "zn":"bh");
+            let c = await ProductService.getP(null, location.pathname.includes("/zn")? "zn":"bh");
             console.log("get all url out");
             console.log("data",c.data);
-            setProducts(c.data);
+
+            setProducts(c.data.reverse());
             setIsLoading(false);
         }
         catch(err){
@@ -60,10 +63,12 @@ const Products = () => {
             alert("אחד מהשדות או יותר ריקות");
             return;
         } 
+        const from =(location.pathname).includes("/zn")? "zn" : "bh"
         let data = {
             id: inputIDU,
             name: inputNameU,
             price: inputPriceU,
+            from: from,
         }
 
         await ProductService.updateP(data.id,data);
@@ -73,7 +78,7 @@ const Products = () => {
     }
     const deleteP = async(id) => {
         setIsLoading(true);
-        await ProductService.deleteP(id);
+        await ProductService.deleteP(id, location.pathname.includes("/zn")? "zn": "bh");
         setIsLoading(false);
         await getAllProduct();
         await handleSearch();
@@ -98,10 +103,12 @@ const Products = () => {
             setIsLoading(false);
             return;
         } 
+        const from = (location.pathname).includes("/zn")? "zn" : "bh";
         let data = {
             id: inputID,
             name: inputName,
             price: inputPrice,
+            from: from,
         }
         await ProductService.createP(data);
         setIsLoading(false);
@@ -138,58 +145,62 @@ const Products = () => {
         <br/>
         <table className="tableP">
             <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">קוד פריט</th>
-                <th scope="col">תיאור פריט</th>
-                <th scope="col">מחיר ליחידה</th>
-                <th scope="col">עדכון\מחיקה</th>
-            </tr>
+                <tr>
+                    <th scope="col">קוד פריט</th>
+                    <th scope="col">תיאור פריט</th>
+                    <th scope="col">מחיר ליחידה</th>
+                    <th scope="col">פעולות</th>
+                </tr>
             </thead>
             <tbody>
+            <tr>
+                <td data-th="קוד פרטי">
+                    <input type="text" id="id" name="id" value={inputID} onChange={e => setInputID(e.target.value)}></input>
+                </td>
+                <td data-th="תיאור פריט"><textarea id="name" name="name" value={inputName} onChange={e => setInputName(e.target.value)}></textarea></td>
+                <td data-th="מחיר ליחידה"><input type="text" id="price" name="price" value={inputPrice} onChange={e => setInputPrice(e.target.value)}></input></td>
+                {/* <td scope="row"><button className="btn success" onClick={createP}>הוספה</button></td> */}
+                <td><FilePlus className="btn success" onClick={createP} size={50}/></td>
+            </tr>
             {
             products && products.map((item,i) => {
                     return(
                     <tr key={i}>
-                        <th scope ="row">{i + 1}</th>
-                        <td>{item.id}</td>
-                        <td>{item.name}</td>
-                        <td>{item.price}</td>
+                        <td data-th="קוד פרטי">{item.id}</td>
+                        <td data-th="תיאור פריט">{item.name}</td>
+                        <td data-th="מחיר ליחידה">{item.price}</td>
                         <td>
-                            <button className="btn danger" onClick={()=>{deleteP(item.id)}}>מחיקה</button>
-                            <button className="btn warning" onClick={() => {handleOpen(); setInputIDU(item.id);  setInputNameU(item.name); setInputPriceU(item.price)}}>עריכה</button>
+                            <ul className="flex relative">
+                                <Pen className="btn warning" onClick={() => {handleOpen(); setInputIDU(item.id);  setInputNameU(item.name); setInputPriceU(item.price)}} size={50}/>
+                                <Trash className="btn danger" onClick={()=>{deleteP(item.id)}} size={50}/>
+                            </ul>
                             <Modal isOpen={open} onClose={handleClose}>
                                 <h1>עדכון לקוח</h1>
-                                <table>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">קוד פריט</th>
-                                        <th scope="col">תיאור פריט</th>
-                                        <th scope="col">מחיר ליחידה</th>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row"><button className="btn success" onClick={updateP}>שמירת שינוי</button></th>
-                                        <th scope="row">
-                                            <input type="text" id="id" name="id" value={inputIDU} onChange={e => setInputIDU(e.target.value)} readOnly></input>
-                                        </th>
-                                        <th scope="row"><textarea id="name" name="name" value={inputNameU} onChange={e => setInputNameU(e.target.value)}></textarea></th>
-                                        <th scope="row"><input type="text" id="price" name="price" value={inputPriceU} onChange={e => setInputPriceU(e.target.value)}></input></th>
-                                    </tr>
+                                <table className="tableP">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">קוד פריט</th>
+                                            <th scope="col">תיאור פריט</th>
+                                            <th scope="col">מחיר ליחידה</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td scope="row" data-th="קוד פרטי">
+                                                <input type="text" id="id" name="id" value={inputIDU} onChange={e => setInputIDU(e.target.value)} readOnly></input>
+                                            </td>
+                                            <td scope="row" data-th="תיאור פריט"><textarea id="name" name="name" value={inputNameU} onChange={e => setInputNameU(e.target.value)}></textarea></td>
+                                            <td scope="row" data-th="מחיר ליחידה"><input type="text" id="price" name="price" value={inputPriceU} onChange={e => setInputPriceU(e.target.value)}></input></td>
+                                            {/* <td><button className="btn success" onClick={updateP}>שמירת שינוי</button></td> */}
+                                            <td><Pen className="btn warning" onClick={updateP} size={50}/></td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </Modal>
                         </td>
                     </tr>)
                 })
             }
-            <tr>
-                <th scope="row">#</th>
-                <th>
-                    <input type="text" id="id" name="id" value={inputID} onChange={e => setInputID(e.target.value)}></input>
-                </th>
-                <th><textarea id="name" name="name" value={inputName} onChange={e => setInputName(e.target.value)}></textarea></th>
-                <th><input type="text" id="price" name="price" value={inputPrice} onChange={e => setInputPrice(e.target.value)}></input></th>
-                <th scope="row"><button className="btn success" onClick={createP}>הוספה</button></th>
-            </tr>
             </tbody>
         </table>
         <Footer/>

@@ -1,5 +1,5 @@
 import React, {forwardRef,useState,useEffect, useRef, useCallback, useDebugValue}from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, useLocation } from "react-router-dom"
 import "./BidStatic.css"
 import {ProductService} from "../../Service/product.service"
 import { BidService } from "../../Service/bid.service"
@@ -8,12 +8,13 @@ import BackIcon from "../../images/back.png"
 import {useReactToPrint} from 'react-to-print';
 
 import Printer from "./../../images/printer.png"
-import Logo from "../../images/logo.png"
+import LogoBH from "./../../images/logobh.png"
+import LogoZN from "./../../images/logozn.png"
 
 const ComponentToPrint = forwardRef((props, ref) => {
    
     const param = useParams();
-    
+    const location = useLocation();
     const [customerID, setCustomerID] = useState();
     const [customerName, setCustomerName] = useState();
     const [priceTotal, setPriceTotal] = useState(0);
@@ -23,7 +24,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
     const [dateTo, setDateTo] = useState();
     const init = async()=>{
         console.log("useParams", param);
-        const data = await BidService.getB(param.id);
+        const data = await BidService.getB(param.id, location.pathname.includes("/zn")? "zn": "bh");
         const bid = data.data;
         console.log("bid",bid)
         setCustomerID(bid.customer.id);
@@ -41,12 +42,12 @@ const ComponentToPrint = forwardRef((props, ref) => {
         setPriceTotal(0);
         setDiscountDis(bid.discount.dis);
 
-        const data2 = await BidDetailsService.getBD(bid._id);
+        const data2 = await BidDetailsService.getBD(bid._id,location.pathname.includes("/zn")? "zn": "bh");
         const bidsDetails = data2.data;
         var totalPriceW = 0;
         bidsDetails.map(async(bd) =>{
             console.log("bd", bd);
-            const data3 = await ProductService.getP(bd.idProduct);
+            const data3 = await ProductService.getP(bd.idProduct, location.pathname.includes("/zn")? "zn": "bh");
             const p = data3.data;
             console.log("bd p", bd.idProduct,p)
             const id = p.id;
@@ -69,18 +70,19 @@ const ComponentToPrint = forwardRef((props, ref) => {
     <>
     <div className="Doc" ref={ref}>
         <header className="header">
-            <img src={Logo} width={300}/> 
+            <img className="logo" src={location.pathname.includes("/zn") ? LogoZN : LogoBH} width={300}/> 
         </header>
-        <h1 className="title">הצעת מחיר מס #{param.id}</h1> 
+        <h1 className="title"><b>הצעת מחיר מס #{param.id}</b></h1> 
         <div className="groupToForm">
-            <side className="from">
+            <aside className="from">
                 <h1>עבור</h1>
                 <p>שם לקוח: <b>{customerName}</b></p>
                 <p>מספר טלפון:<b>{customerID}</b></p>
                 <p>תאריך: <b>{dateFrom}</b></p>
-                <p>ההצעה תקפה ל: <b>{dateTo}</b></p>
-            </side>
-            <side className="to">
+                {/* <p>ההצעה תקפה ל: <b>{dateTo}</b></p> */}
+            </aside>
+            { location.pathname.includes("/bh") ?
+            <aside className="to">
                 <h1>מאת</h1>
                 <p><b>ב.ח. לוחות חשמל</b></p>
                 <p>עוסק מורשה:<b>558562096</b></p>
@@ -88,7 +90,17 @@ const ComponentToPrint = forwardRef((props, ref) => {
                 <p>טלפון: <b><a href="tel:+9720507903256">0507903256</a> | <a href="tel:+9720522529613">0522529613</a></b></p>
                 <p>דוא"ל: <b><a href="mailto:bilalzinaty@gmail.com">bilalzinaty@gmail.com</a></b></p>
 
-            </side>
+            </aside> :
+            <aside className="to">
+                <h1>מאת</h1>
+                <p><b>אלזינאתי עבודות חשמל</b></p>
+                <p>עוסק מורשה:<b>061216438</b></p>
+                <p>כתובת: <b>ברנר 3, לוד</b></p>
+                <p>טלפון: <b><a href="tel:+9720507903256">0507903256</a></b></p>
+                <p>דוא"ל: <b><a href="mailto:bilalzinaty@gmail.com">bilalzinaty@gmail.com</a></b></p>
+
+            </aside>
+            }
         </div>
         <div className="tableBS">
             <table className="tableBS">
@@ -163,17 +175,17 @@ const ComponentToPrint = forwardRef((props, ref) => {
 })
 const BidStatic = () => {
     const componentRef = useRef();
-    const param = useParams();
     const navigate = useNavigate();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-        onPrintError: (error) => {console.log(error)},
+        // onPrintError: (error) => {console.log(error)},
         documentTitle: "",
-        onBeforePrint: () => {
-            const doc =document.getElementsByClassName("Doc")[0];
+        contentRef:componentRef,
+        onBeforePrint: async() => {
+            const doc = document.getElementsByClassName("Doc")[0];
             doc.style.direction =" rtl";
         },
-        onAfterPrint: () => {
+        onAfterPrint: async() => {
             const doc =document.getElementsByClassName("Doc")[0];
             doc.style.direction =" rtl";
         },

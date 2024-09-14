@@ -3,11 +3,11 @@ import { URL } from '../Utils/globalVaribals';
 const BID = `${URL}/api/bid`;
 
 // get one or all
-const getB = async(id = null) => {
+const getB = async(id = null,from) => {
     if(id)
     {
         try{
-            const res = await axios.get(`${BID}/${id}`);
+            const res = await axios.get(`${BID}/${from}/${id}`);
             const result = {data: res.data.bid, err: false };
             console.log("result", result);
             return result;
@@ -20,7 +20,7 @@ const getB = async(id = null) => {
     else{
         try{
             console.log("get BID get " + BID);
-            const res = await axios.get(`${BID}`);
+            const res = await axios.get(`${BID}/${from}`);
             const result = {data: res.data.bids, err: false };
             console.log("result", result);
             return result;
@@ -58,9 +58,10 @@ const updateB = async(id, data) => {
     }
 }
 
-const deleteB = async(id) => {
+const deleteB = async(id, from) => {
     try{
-        const res = await axios.delete(`${BID}/${id}`);
+        const body =  {from:from}
+        const res = await axios.delete(`${BID}/${from}/${id}`);
         const result = {data: res.data.bids, err: false };
         console.log("result", result);
         return result;

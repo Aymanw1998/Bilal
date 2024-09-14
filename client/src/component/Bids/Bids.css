@@ -14,9 +14,9 @@
 }
   
 .tableB td {
-  text-align: center;
+  text-align: right;
 }
-.tableB input, .tableP textarea {
+.tableB input, .tableB textarea {
   border: 2px solid black;
   border-radius: 4px;
 } 
@@ -27,11 +27,9 @@
 caption {
   padding: 10px;
 }
-
 .btn {
   border: none;
   background-color: inherit;
-  padding: 14px 28px;
   font-size: 16px;
   cursor: pointer;
   display: inline-block;
@@ -70,4 +68,33 @@ caption {
 
 .save {
 font-size: 50px;
+}
+
+@media (max-width: 767px) {
+  .tableB {
+    width:90%;
+  }
+  .tableB thead{
+    display: none;
+  }
+  .tableB tbody, .tableB tr, .tableB td {
+    display: block;
+    width: 100%;
+  }
+  .tableB tr{
+    margin-bottom: 20px;
+    background-color: aliceblue;
+  }
+  .tableB td:first-child{
+    padding-top: .5em;
+  }
+  .tableB td:last-child{
+    padding-bottom: .5em;
+  }
+  .tableB td:before{
+    content: attr(data-th);
+    font-weight: bold;
+    width: 6.5em;
+    display: inline-block;
+  }
 }

@@ -13,10 +13,13 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
+  from:{
+    type: String,
+    required: true,
+  }
 });
 
 // Create the Meeting model
-const product = mongoose.model('product', productSchema);
-
-module.exports = product;
+const productzn = mongoose.model('productzn', productSchema);
+const productbh = mongoose.model('productbh', productSchema);
+module.exports = {productzn, productbh};

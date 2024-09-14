@@ -1,30 +1,32 @@
 import React, {useState,useEffect, useRef, useCallback, useDebugValue}from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useLocation, useParams } from "react-router-dom"
 import "./Bids.css"
 import {ProductService} from "../../Service/product.service"
 import { BidService } from "../../Service/bid.service"
 import { BidDetailsService } from "../../Service/bidDetails.service"
+import {FilePlus, PlusCircle, Pen, Trash, Book} from "react-bootstrap-icons"
 
 import Header from "../Header/Header"
 import Footer from "../Footer/Footer"
 import Loader from "../Loader/Loader"
 const CreateBid = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const param = useParams();
     
     const init = async()=>{
-        console.log("useParams", param);
+        console.log("useParams", param.id,location.pathname.includes("/zn") ? "zn" : "bh");
 
         if(param.id != 0){
-            const data = await BidService.getB(param.id);
+            const data = await BidService.getB(param.id, location.pathname.includes("/zn") ? "zn" : "bh");
             const bid =data.data;
-            console.log("bid",bid)
+            console.log("bid",data)
             setInputID(bid.id);
             setInputCustomerID(bid.customer.id);
             setInputCustomerName(bid.customer.name)
             
 
-            const data2 = await BidDetailsService.getBD(bid._id);
+            const data2 = await BidDetailsService.getBD(bid._id,location.pathname.includes("/zn") ? "zn" : "bh");
             const bidsDetails = data2.data;
             console.log("bidsDetails", bidsDetails)
             if(data2.err){
@@ -35,7 +37,7 @@ const CreateBid = () => {
                 setInputTotalPrice(0);
                 bidsDetails.map(async(bd) =>{
                     console.log("bd", bd);
-                    const data3 = await ProductService.getP(bd.idProduct);
+                    const data3 = await ProductService.getP(bd.idProduct, location.pathname.includes("/zn") ? "zn" : "bh");
                     const p = data3.data;
                     console.log("bd p", bd.idProduct,p)
                     const id = p.id;
@@ -127,7 +129,7 @@ const CreateBid = () => {
         try{
             setIsLoading(true);
             console.log("get all url");
-            let c = await ProductService.getP(null);
+            let c = await ProductService.getP(null, location.pathname.includes("/zn") ? "zn" : "bh");
             console.log("get all url out");
             c.data.map((item) => {
                 
@@ -151,10 +153,9 @@ const CreateBid = () => {
         try{
             setIsLoading(true);
             console.log("get all url");
-            let c = await BidService.getB(null);
+            let c = await BidService.getB(null, location.pathname.includes("/zn")? "zn" : "bh");
             console.log("get all url out");
             console.log("data",c.data);
-            setBids(c.data);
             setIsLoading(false);
         }
         catch(err){
@@ -170,8 +171,10 @@ const CreateBid = () => {
         setIsLoading(true);
         console.log("save bid");
         //save bid
+        const from = (location.pathname).includes("/zn")? "zn" : "bh";
         const data = {
             id: inputID,
+            from: from,
             date: new Date().now,
             paid: false,
             customer:{
@@ -204,21 +207,22 @@ const CreateBid = () => {
             return;
         }
 
-        const dataT = await BidService.getB(inputID);
+        const dataT = await BidService.getB(inputID, location.pathname.includes("/zn") ? "zn" : "bh");
         const bid2 = dataT.data;
         console.log("bid2", bid2.discount)
         // remove past product
-        await BidDetailsService.deleteBD(bid2._id);
+        await BidDetailsService.deleteBD(bid2._id, location.pathname.includes("/zn")? "zn" : "bh");
         //save price
         arrayProduct.map( async(item) =>{
-        const data = await ProductService.getP(item.id);
+        const data = await ProductService.getP(item.id, location.pathname.includes("/zn") ? "zn" : "bh");
         const p = data.data;
-        //alert(bid2._id+","+p._id)
+
         const data2 = {
             idBid: bid2._id,
             idProduct: p._id,
             amount: item.amount,
             TotalPrice: item.totalPrice,
+            from: location.pathname.includes("/zn") ? "zn" : "bh"
         }
         let result = await BidDetailsService.createBD(data2);
         setIsLoading(false);
@@ -232,13 +236,13 @@ const CreateBid = () => {
     navigate(-1);
     }
 
-    const [results, setResults] = useState();
+    const [results, setResults] = useState(products);
     const [selectedProduct, setSelectedProduct] = useState();
     
     useEffect(()=>{ console.log("selectedProduct", selectedProduct)},[selectedProduct])
     const handleChange = (e) => {
         const { target } = e;
-        if (!target.value.trim()) return setResults([]);
+        if (!target.value.trim()) return setResults(products);
         console.log("results change", products)
         const filteredValue = products.filter((p) =>
             p.name.includes(target.value)
@@ -250,6 +254,11 @@ const CreateBid = () => {
         //  if selectedProduct?.id is not in the bid
 
         let b = true;
+        if(!selectedProduct){
+            console.log("this product is in bid");
+            alert("בחר פריט");
+            return;
+        }
         arrayProduct.map((item)=>{
             if(item?.id == selectedProduct?.id)
             {
@@ -261,7 +270,6 @@ const CreateBid = () => {
         {
             console.log("this product is in bid");
             alert("הפריט שבחרת הוא כבר בהצעה");
-            handleClose();
             return;
         }
         const id = selectedProduct?.id;
@@ -328,7 +336,11 @@ const CreateBid = () => {
         <>
         {isLoading &&<Loader/>}
         <Header/>
-        <h1 className="sch-title-big">הצעת מחיר מס <label>{inputID}</label>#     <button className={`btn ${ param.id != 0 ? "warning" : "success"} save`} onClick={createB}>{param.id != 0 ? "עדכן":"שמור"}</button></h1>
+        <h1 className="sch-title-big">הצעת מחיר מס 
+            <label>{inputID}</label>#     
+            {/* <button className={`btn ${ param.id != 0 ? "warning" : "success"} save`} onClick={createB}>{param.id != 0 ? "עדכן":"שמור"}</button> */}
+            <FilePlus size={50} className={`btn ${ param.id != 0 ? "warning" : "success"}`} onClick={createB}/>
+        </h1>
         
         <div className="groupCustomer">
             <h2>עבור</h2>
@@ -373,50 +385,56 @@ const CreateBid = () => {
 
         <h3>הפריטים שנבחרו</h3>
         <table className="tableB">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">קוד פריט</th>
-                <th scope="col">תיאור פריט</th>
-                <th scope="col">מחיר ליחידה</th>
-                <th scope="col">כמות</th>
-                <th scope="col">מחיר מוצר כולל</th>
-                
-            </tr>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">קוד פריט</th>
+                    <th scope="col">תיאור פריט</th>
+                    <th scope="col">מחיר ליחידה</th>
+                    <th scope="col">כמות</th>
+                    <th scope="col">סה"כ</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
             {
             arrayProduct && arrayProduct.map((item,i) => {
                     return(
                     <tr>
-                    <th scope ="row">{i + 1}</th>
-                    <td>{item.id}</td>
-                    <td>{item.name}</td>
-                    <td>{item.price}₪</td>
-                    <td><input type="text" value={item.amount} onChange={(e)=>{Calc(i,e)}}></input></td>
-                    <td><label>{item.totalPrice}₪</label></td>
+                    <th scope ="row" data-th="#">{i + 1}</th>
+                    <td data-th="קוד פריט">{item.id}</td>
+                    <td data-th="תיאור פריט">{item.name}</td>
+                    <td data-th="מחיר ליחידה">{item.price}₪</td>
+                    <td data-th="כמות"><input type="text" value={item.amount} onChange={(e)=>{Calc(i,e)}}></input></td>
+                    <td data-th="סה''כ"><label>{item.totalPrice}₪</label></td>
                     <td><button onClick={()=>{putFromArray(item.id)}}>x</button></td>
                     </tr>)
                 })
             }
             <tr>
-                <th scope="row"><button className="btn success" onClick={handleOpen}>חפש פריט</button></th>
+                {/* <th scope="row"><button className="btn success" onClick={handleOpen}>חפש פריט</button></th> */}
+                <th><PlusCircle className="btn success" onClick={handleOpen}/></th>
                 <Modal isOpen={open} onClose={handleClose} addClose={addProduct}>
                     <h1>חיפוש</h1>
                     <LiveSearch results={results} value={selectedProduct?.name} renderItem={(item) => <p>({item.id}) {"==>"} {item.name}</p>} onChange={handleChange} onSelect={(item) => setSelectedProduct(item)}/>
-                    <tr>
-                        <th scope="col">קוד פריט</th>
-                        <th scope="col">תיאור פריט</th>
-                        <th scope="col">מחיר ליחידה</th>
-                    </tr>
-                    <tr>
+                    <table className="tableB">
+                        <thead>
+                            <tr>
+                                <td scope="col">קוד פריט</td>
+                                <td scope="col">תיאור פריט</td>
+                                <td scope="col">מחיר ליחידה</td>
+                            </tr>
+                        </thead>
+                        <tr>
 
-                        <td><label>{selectedProduct?.id}</label></td>
-                        <td><label>{selectedProduct?.name}</label></td>
-                        <td><label>{selectedProduct?.price}₪</label></td>
-                    </tr>
+                            <td data-th="קוד פריט"><label>{selectedProduct?.id}</label></td>
+                            <td data-th="תיאור פריט"><label>{selectedProduct?.name}</label></td>
+                            <td data-th="מחיר ליחידה"><label>{selectedProduct?.price}₪</label></td>
+                        </tr>
+                    </table>
                 </Modal>
             </tr>
-            <tr>
-
-            </tr>
+            </tbody>
         </table>
         <Footer/>
         </>

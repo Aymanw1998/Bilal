@@ -3,7 +3,7 @@ import "./Loader.css"
 const Loader = ()=> {
         return (
         <Modal isOpen={true}>
-            <div class="loader"></div>
+            <div className="loader"></div>
         </Modal>)
 
 }
