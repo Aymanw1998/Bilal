@@ -10,7 +10,6 @@ const BidDetail = require('../models/bidDetails');
  */
 const getBidDetails = asyncHandler(async(req, res, next) => {
     const bidDetails = await BidDetail.find({from: req.params.from});
-    console.log("BidDetails",bidDetails);
     if(!bidDetails)
         return next(new errorResponse('DONT HAVE BidDetails'));
     //return successResponse(req, res, BidDetails);
@@ -27,7 +26,6 @@ const getBidDetails = asyncHandler(async(req, res, next) => {
  */
 const getBidDetail = asyncHandler(async(req, res, next) => {
     const bidDetail = await BidDetail.find({idBid: req.params.id,from: req.params.from});
-    console.log("BidDetail", bidDetail);
     if(bidDetail == null)
         return next(new errorResponse(`Dont have BidDetail with id :[${req.params.id}]`));
     return res.status(200).json({
@@ -43,12 +41,8 @@ const getBidDetail = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const createBidDetail = asyncHandler(async(req, res, next) => {
-    console.log("create new BidDetail", req.body)
     const Product = require("./../models/product");
-
-
     const product = (req.body.from == "zn")? await Product.productzn.findById(req.body.idProduct) : await Product.productbh.findById(req.body.idProduct);
-    
     if(!product) {
         return next(new errorResponse(`The Product with id :[${req.body.idProduct}] is not exist`));
     }
@@ -61,7 +55,6 @@ const createBidDetail = asyncHandler(async(req, res, next) => {
     }
 
     let bidDetail = await BidDetail.findOne({idBid: bidDetailSchema.idBid, idProduct: bidDetailSchema.idProduct});
-    console.log("BidDetail", bidDetail);
     if(bidDetail)
         return next(new errorResponse(`The BidDetail with same details is  exist`));
     bidDetail = await BidDetail.create(req.body);
@@ -80,7 +73,6 @@ const createBidDetail = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const updateBidDetail = asyncHandler(async(req, res, next) => {
-    console.log("update BidDetail", req.params.id);
     let bidDetailSchema = {
         idBid: req.body.idBid,
         idProduct: req.body.idProduct, 
@@ -88,7 +80,6 @@ const updateBidDetail = asyncHandler(async(req, res, next) => {
         TotalPrice: (parseInt(product.price) * parseInt(req.body.amount)).toString(),
         from: req.body.from,
     }
-    console.log(bidDetailSchema);
     let bidDetail = await BidDetail.findOne({idBid: bidDetailSchema.idBid, idProduct: bidDetailSchema.idProduct});
     if(!bidDetail)
         return next(new errorResponse(`The BidDetail with same details is not exist`));

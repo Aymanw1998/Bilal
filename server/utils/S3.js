@@ -31,7 +31,7 @@ const S3 = {
       Key: key,
       ACL: 'public-read-write'
     };
-    console.log('params', params);
+    // console.log('params', params);
 
     const newData = await s3Client.putObject(params).promise();
     if (!newData) {

@@ -70,7 +70,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
     <>
     <div className="Doc" ref={ref}>
         <header className="header">
-            <img className="logo" src={location.pathname.includes("/zn") ? LogoZN : LogoBH} width={300}/> 
+            <img className="logoSatic" src={location.pathname.includes("/zn") ? LogoZN : LogoBH} width={300}/> 
         </header>
         <h1 className="title"><b>הצעת מחיר מס #{param.id}</b></h1> 
         <div className="groupToForm">

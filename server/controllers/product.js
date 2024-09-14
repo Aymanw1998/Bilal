@@ -11,9 +11,7 @@ const Product = require('../models/product');
 const getProducts = asyncHandler(async(req, res, next) => {
     const productszn = await Product.productzn.find();
     const productsbh = await Product.productbh.find();
-    console.log("products", req.params.from, productszn)
     const products = req.params.from == "zn" ? productszn : productsbh;
-    console.log("products",products);
     if(!products)
         return next(new errorResponse('DONT HAVE products'));
     //return successResponse(req, res, products);
@@ -51,7 +49,6 @@ const getProduct = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const createProduct = asyncHandler(async(req, res, next) => {
-    console.log("create new product", req.body)
     let productSchema = {
         id: req.body.id,
         name : req.body.name,
@@ -60,7 +57,6 @@ const createProduct = asyncHandler(async(req, res, next) => {
     }
 
     let product = req.body.from == "zn"? await Product.productzn.findOne({id: productSchema.id}) : await Product.productbh.findOne({id: productSchema.id});
-    console.log("product", product);
     if(product)
         return next(new errorResponse(`The product with id :[${req.params.id}] exist`));
     product = req.body.from == "zn"? await Product.productzn.create(productSchema) : await Product.productbh.create(productSchema);
@@ -79,14 +75,12 @@ const createProduct = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const updateProduct = asyncHandler(async(req, res, next) => {
-    console.log("update product", req.params.id);
     let productSchema = {
         id: req.body.id,
         name: req.body.name,
         price: req.body.price,
         from: req.body.from,
     }
-    console.log(productSchema);
     let product = await req.body.from == "zn"? await Product.productzn.findOne({id: productSchema.id}) : await Product.productbh.findOne({id: productSchema.id});
     if(!product)
         return next(new errorResponse(`The product with id :[${req.params.id}] is not exist`));
@@ -106,10 +100,11 @@ const updateProduct = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const deleteProduct = asyncHandler(async(req, res, next) => {
-    let product = req.body.from == "zn"? await Product.productzn.findOne({id: req.params.id}): await Product.productbh.findOne({id: req.params.id});
+    console.log("delete p", req.params)
+    let product = req.params.from == "zn"? await Product.productzn.findOne({id: req.params.id}): await Product.productbh.findOne({id: req.params.id});
     if(!product)
         return next(new errorResponse(`The product with id :[${req.params.id}] is not exist`));
-    req.body.from == "zn"? 
+    req.params.from == "zn"? 
     await Product.productzn.deleteOne({id: req.params.id})
     .then(async()=>{
         const products = await Product.productzn.find();

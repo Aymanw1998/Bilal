@@ -12,7 +12,6 @@ const getBids = asyncHandler(async(req, res, next) => {
     const bidzn = await Bid.bidzn.find();
     const bidbh = await Bid.bidbh.find();
     let bids = req.params.from == "zn" ? bidzn : bidbh; 
-    console.log("bids",bids);
     if(!bids)
         return next(new errorResponse('DONT HAVE bids'));
     //return successResponse(req, res, bids);
@@ -28,8 +27,6 @@ const getBids = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const getBid = asyncHandler(async(req, res, next) => {
-    console.log("params", req.params);
-    console.log("bid id ", req.params.id,req.params.from);
     const bidzn = await Bid.bidzn.findOne({id: req.params.id});
     const bidbh = await Bid.bidbh.findOne({id: req.params.id});
     if(bidzn == null && bidbh == null)
@@ -48,7 +45,6 @@ const getBid = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const createBid = asyncHandler(async(req, res, next) => {
-    console.log("create new bid", req.body)
     let bidSchema = {
         id: req.body.id,
         date: req.body.date,
@@ -69,7 +65,6 @@ const createBid = asyncHandler(async(req, res, next) => {
     }
 
     let bid = (req.body.from == "zn")? await Bid.bidzn.findOne({id: bidSchema.id}) : await Bid.bidbh.findOne({id:bidSchema.id});
-    console.log("bid", bid);
     if(bid)
         return next(new errorResponse(`The bid with id :[${req.body.id}] exist`));
     bid = (req.body.from == "zn") ? await Bid.bidzn.create(bidSchema) : await Bid.bidbh.create(bidSchema);
@@ -88,7 +83,6 @@ const createBid = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const updateBid = asyncHandler(async(req, res, next) => {
-    console.log("update bid", req.params.id);
     let bidSchema = {
         id: req.body.id,
         date: req.body.date,
@@ -100,7 +94,6 @@ const updateBid = asyncHandler(async(req, res, next) => {
         discount: req.body.discount,
         from: req.body.from,
     }
-    console.log(bidSchema);
     let bid = (req.body.from == "zn")? await Bid.bidzn.findOne({id: bidSchema.id}) : await Bid.bidbh.findOne({id:bidSchema.id});
     if(!bid)
         return next(new errorResponse(`The bid with id :[${req.params.id}] is not exist`));

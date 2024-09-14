@@ -22,4 +22,5 @@ const productSchema = new mongoose.Schema({
 // Create the Meeting model
 const productzn = mongoose.model('productzn', productSchema);
 const productbh = mongoose.model('productbh', productSchema);
+
 module.exports = {productzn, productbh};
