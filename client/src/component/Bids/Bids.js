@@ -27,25 +27,25 @@ const Bids = () => {
     const [from, setFrom] = useState(location.pathname.includes("/zn") ? "zn" : "bh");
     useEffect(()=>{setFrom(location.pathname.includes("/zn") ? "zn" : "bh")}, []);
     const getAllBid = async()=>{
-        console.log("get all Bid");
+        // console.log("get all Bid");
         try{
             setIsLoading(true);
-            console.log("get all url");
+            // console.log("get all url");
             let c = await BidService.getB(null, location.pathname.includes("/zn") ? "zn" : "bh");
-            console.log("get all url out");
-            console.log("data",c.data);
+            // console.log("get all url out");
+            // console.log("data",c.data);
             setBids(c.data);
             setIsLoading(false);
         }
         catch(err){
-            console.log("error with get bids " + err)
+            // console.log("error with get bids " + err)
         }
     }
     
     useEffect(()=>{
         getAllBid();
     },[])
-    useEffect(()=>{console.log(bids);}, [bids]);
+    useEffect(()=>{/*console.log(bids);*/}, [bids]);
 
 
     const [search, setSearch] = useState("");
@@ -94,21 +94,18 @@ const Bids = () => {
                     <td scope="col">תאריך</td>
                     <td scope="col">לקוח</td>
                     <td scope="col">פעולות</td>
+                    <td><FilePlus className="btn success" size={50} onClick={()=>{navigate(`/${from}/bids/0`);}}/></td>
                     {/* <th><FilePlus className="btn success" size={50} onClick={()=>{navigate(`/${from}/bids/0`);}}/></th> */}
                 </tr>
             </thead>
             <tbody>
-            <tr>
-                {/* <td scope="row"><button className="btn success" onClick={()=>{navigate(`/bids/0`);}}>הוספה</button></td> */}
-                <td><FilePlus className="btn success" size={50} onClick={()=>{navigate(`/${from}/bids/0`);}}/></td>
-            </tr>
             {
             bids && bids.map((item,i) => {
                     const id = item.id;
                     const date = `${new Date(item.date).getDate() >9 ? new Date(item.date).getDate() : "0" + new Date(item.date).getDate()}`+
                                 `/` + `${new Date(item.date).getMonth() >9 ? (new Date(item.date).getMonth() + 1) : "0" + (new Date(item.date).getMonth()+1)}`+
                                 `/` + `${new Date(item.date).getFullYear()}`;
-                    console.log("date", date);
+                    // console.log("date", date);
                     return(
                         <tr key={i}>
                             <td data-th="מספר הצעה">{id}</td>

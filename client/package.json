@@ -12,6 +12,7 @@
     "react-bootstrap": "^2.10.4",
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.3.1",
+    "react-html2pdf": "^1.0.1",
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
     "react-to-print": "^2.15.1",

@@ -39,10 +39,10 @@ const Products = () => {
         try{
             setIsLoading(true);
             console.log("get all url");
-            console.log(location.pathname, location.pathname.includes("/zn")? "zn":"bh");
+            // console.log(location.pathname, location.pathname.includes("/zn")? "zn":"bh");
             let c = await ProductService.getP(null, location.pathname.includes("/zn")? "zn":"bh");
             console.log("get all url out");
-            console.log("data",c.data);
+            // console.log("data",c.data);
 
             setProducts(c.data.reverse());
             setIsLoading(false);
@@ -55,7 +55,7 @@ const Products = () => {
     useEffect(()=>{
         getAllProduct();
     },[])
-    useEffect(()=>{console.log(products);}, [products]);
+    // useEffect(()=>{console.log(products);}, [products]);
 
     const updateP = async() => {
         //alert(`הפריט הוא ==> קוד: ${inputIDU}, תיאור: ${inputNameU}, מחיר ליחידה: ${inputPriceU}`);
@@ -121,7 +121,7 @@ const Products = () => {
 
     useEffect(()=> {handleSearch()}, [search])
     const handleSearch = async() => {
-        console.log("search", search);
+        // console.log("search", search);
         await getAllProduct();
         if(search != ""){
             let pp = [];
@@ -131,7 +131,7 @@ const Products = () => {
                 }
             })
 
-            console.log("search3", products, pp);
+            // console.log("search3", products, pp);
             setProducts(pp);
         }
     }

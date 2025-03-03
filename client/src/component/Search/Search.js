@@ -4,7 +4,7 @@ import "./Search.css"
 const Search = ({item, setItem}) => {
     const [search, setSearch] = React.useState("");
 
-    React.useEffect(()=> {console.log("search", search);setItem && setItem(search);}, [search])
+    // React.useEffect(()=> {console.log("search", search);setItem && setItem(search);}, [search])
     return (
     <>
     <div id="search">

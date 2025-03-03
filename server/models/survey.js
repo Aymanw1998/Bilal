@@ -2,10 +2,7 @@ const mongoose = require('mongoose');
 
 // Define the Meeting Schema
 const bidSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
+  
   finishPrice: {
     type: Number,
   },
@@ -23,6 +20,9 @@ const bidSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  paid: {
+    type: Boolean,
+  },
   customer:{
     id: {type:String},
     name:{type:String},
@@ -35,5 +35,4 @@ const bidSchema = new mongoose.Schema({
 
 // Create the bid model
 const bidzn = mongoose.model('bidzn', bidSchema);
-const bidbh = mongoose.model('bidbh', bidSchema);
 module.exports = {bidzn,bidbh};

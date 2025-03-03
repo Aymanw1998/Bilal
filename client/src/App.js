@@ -7,7 +7,8 @@ import Bids from "./component/Bids/Bids";
 import CreateBid from "./component/Bids/CreateBid";
 import Header from "./component/Header/Header";
 import Footer from "./component/Footer/Footer";
-import BidStatic from "./component/Bids/BidStatic"
+import BidStatic from "./component/Bids/BidStatic";
+import Survey from "./component/Survey/Survey";
 
 const See = () => {
     const navigate = useNavigate();
@@ -32,6 +33,7 @@ const  App = () => {
           <Route path="/bh/bids" element={<Bids/>}/>
           <Route path="/bh/bids/:id" element={<CreateBid/>}/>
           <Route path="/bh/static/:id" element={<BidStatic/>}/>
+          <Route path="/bh/survey" element={<Survey/>}/>
 
           <Route path="/zn/products" element={<Products/>}/>
           <Route path="/zn/bids" element={<Bids/>}/>

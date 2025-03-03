@@ -48,7 +48,6 @@ const createBid = asyncHandler(async(req, res, next) => {
     let bidSchema = {
         id: req.body.id,
         date: req.body.date,
-        paid: req.body.paid,
         from: req.body.from,
         customer: {
             id: req.body.customer.id,
@@ -58,10 +57,7 @@ const createBid = asyncHandler(async(req, res, next) => {
         date: Date.now(),
         totalPrice: req.body.totalPrice,
         vat: req.body.vat,
-        discount:{
-            dis: req.body.discount.dis,
-            price : req.body.discount.price,
-        }
+        discount: req.body.discount,
     }
 
     let bid = (req.body.from == "zn")? await Bid.bidzn.findOne({id: bidSchema.id}) : await Bid.bidbh.findOne({id:bidSchema.id});

@@ -50,7 +50,7 @@ const createBidDetail = asyncHandler(async(req, res, next) => {
         idBid: req.body.idBid,
         idProduct: req.body.idProduct, 
         amount: req.body.amount ,
-        TotalPrice: (parseInt(product.price) * parseInt(req.body.amount)).toString(),
+        TotalPrice: (parseFloat(product.price) * parseFloat(req.body.amount)).toString(),
         from: req.body.from,
     }
 
@@ -77,7 +77,7 @@ const updateBidDetail = asyncHandler(async(req, res, next) => {
         idBid: req.body.idBid,
         idProduct: req.body.idProduct, 
         amount: req.body.amount ,
-        TotalPrice: (parseInt(product.price) * parseInt(req.body.amount)).toString(),
+        TotalPrice: (parseFloat(product.price) * parseFloat(req.body.amount)).toString(),
         from: req.body.from,
     }
     let bidDetail = await BidDetail.findOne({idBid: bidDetailSchema.idBid, idProduct: bidDetailSchema.idProduct});
@@ -99,21 +99,25 @@ const updateBidDetail = asyncHandler(async(req, res, next) => {
  * @access Public
  */
 const deleteBidDetail = asyncHandler(async(req, res, next) => {
-    let bidDetail = await BidDetail.findOne({idBid: req.params.id, from: req.params.from});
+    let bidDetail = await BidDetail.find({idBid: req.params.id, from: req.params.from});
+    console.log("bidDetail", bidDetail)
     if(!bidDetail)
         return next(new errorResponse(`The BidDetail with id :[${req.params.id}] is not exist`));
-    await BidDetail.deleteMany({idBid: req.params.id, from: req.body.from})
-    .then(async()=>{
-        const bidDetails = await BidDetail.find();
-    return res.status(200).json({
-        success: true,
-        bidDetails
-    });
+    bidDetail.map(async(bidD)=>{
+        await  BidDetail.findByIdAndDelete(bidD._id)
+            .then(async(result)=>{
+                console.log("Deleted count:", result.deletedCount);
+            })
+            .catch((err) =>{
+                if(err)
+                    return;
+            })  
     })
-    .catch((err) =>{
-        if(err)
-            return next(new errorResponse('delete failed', 401));
-        })   
+    const bidDetails = await BidDetail.find();
+        return res.status(200).json({
+            success: true,
+            bidDetails
+        });
 });
 
 module.exports = {

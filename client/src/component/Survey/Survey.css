@@ -1,0 +1,35 @@
+#survey{
+    margin: auto;
+    width:70%;
+}
+#survey .title {
+    text-align: center;
+    border-bottom: solid;
+
+}
+#survey table, #survey th, #survey td { 
+    /* border-collapse: collapse; */
+    border: 1px solid;
+    text-align: center;
+    width: 900px;
+
+}
+
+#survey thead td {
+    background-color: #9b9c96;
+}
+#survey .block{
+    background: #e4a2a227;
+}
+
+#survey input[type=text] {
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+#survey img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    /* width: 50%; */
+}

@@ -9,11 +9,11 @@ const getB = async(id = null,from) => {
         try{
             const res = await axios.get(`${BID}/${from}/${id}`);
             const result = {data: res.data.bid, err: false };
-            console.log("result", result);
+            // console.log("result", result);
             return result;
         }catch(err){
             const result = {data: {_id:null}, err: true };
-            console.log("result", result);
+            // console.log("result", result);
             return result;
         }
     }
@@ -22,11 +22,11 @@ const getB = async(id = null,from) => {
             console.log("get BID get " + BID);
             const res = await axios.get(`${BID}/${from}`);
             const result = {data: res.data.bids, err: false };
-            console.log("result", result);
+            // console.log("result", result);
             return result;
         }catch(err){
             const result = {data: [], err: true };
-            console.log("result", result);
+            // console.log("result", result);
             return result;
         }
     }
@@ -36,11 +36,11 @@ const createB = async(data) => {
     try{
         const res = await axios.post(`${BID}`, data);
         const result = {data: res.data.bid, err: false };
-        console.log("result", result);
+        // console.log("result", result);
         return result;
     }catch(err){
         const result = {data: {_id:null}, err: true };
-        console.log("result", result);
+        // console.log("result", result);
         return result;
     }
 }
@@ -49,25 +49,24 @@ const updateB = async(id, data) => {
     try{
         const res = await axios.put(`${BID}/${id}`, data);
         const result = {data: res.data.bid, err: false };
-        console.log("result", result);
+        // console.log("result", result);
         return result;
     }catch(err){
         const result = {data: {_id:null}, err: true };
-        console.log("result", result);
+        // console.log("result", result);
         return result;
     }
 }
 
 const deleteB = async(id, from) => {
     try{
-        const body =  {from:from}
         const res = await axios.delete(`${BID}/${from}/${id}`);
         const result = {data: res.data.bids, err: false };
-        console.log("result", result);
+        // console.log("result", result);
         return result;
     }catch(err){
         const result = {data: {_id:null}, err: true };
-        console.log("result", result);
+        // console.log("result", result);
         return result;
     }
 }

@@ -23,10 +23,10 @@ const ComponentToPrint = forwardRef((props, ref) => {
     const [dateFrom, setDateFrom] = useState();
     const [dateTo, setDateTo] = useState();
     const init = async()=>{
-        console.log("useParams", param);
+        // console.log("useParams", param);
         const data = await BidService.getB(param.id, location.pathname.includes("/zn")? "zn": "bh");
         const bid = data.data;
-        console.log("bid",bid)
+        // console.log("bid",bid)
         setCustomerID(bid.customer.id);
         setCustomerName(bid.customer.name);
         const datefrom = `${new Date(bid.date).getDate() >9 ? new Date(bid.date).getDate() : "0" + new Date(bid.date).getDate()}`+
@@ -46,18 +46,24 @@ const ComponentToPrint = forwardRef((props, ref) => {
         const bidsDetails = data2.data;
         var totalPriceW = 0;
         bidsDetails.map(async(bd) =>{
-            console.log("bd", bd);
-            const data3 = await ProductService.getP(bd.idProduct, location.pathname.includes("/zn")? "zn": "bh");
+            // console.log("bd", bd);
+            let data3 = await ProductService.getP(bd.idProduct, location.pathname.includes("/zn")? "zn": "bh");
             const p = data3.data;
-            console.log("bd p", bd.idProduct,p)
             const id = p.id;
+            if(!id) return;
+            // console.log("idP", id);
             const name = p.name;
             const price = p.price;
             const amount = bd.amount;
-            const totalPrice = (parseInt(p.price) * parseInt(bd.amount));
-            totalPriceW += totalPrice; 
+            const totalPrice = (parseFloat(p.price) * parseFloat(bd.amount));
+            try{
+                totalPriceW += (totalPrice); 
+            }
+            catch(err){
+                console.err("err numbers");
+            }
             setPriceTotal(totalPriceW);
-            console.log(priceTotal, totalPrice, totalPriceW);
+            // console.log(priceTotal, totalPrice, totalPriceW);
             setArrayProduct( arrayProduct => [...arrayProduct,{id: id,name: name,price: price, amount: amount, totalPrice: totalPrice }]);
         });
         
@@ -68,7 +74,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
     
     return(
     <>
-    <div className="Doc" ref={ref}>
+    <div className="Doc" dir="rtl" ref={ref}>
         <header className="header">
             <img className="logoSatic" src={location.pathname.includes("/zn") ? LogoZN : LogoBH} width={300}/> 
         </header>
@@ -79,7 +85,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
                 <p>שם לקוח: <b>{customerName}</b></p>
                 <p>מספר טלפון:<b>{customerID}</b></p>
                 <p>תאריך: <b>{dateFrom}</b></p>
-                {/* <p>ההצעה תקפה ל: <b>{dateTo}</b></p> */}
+                <p><b>הערה: ההצעה תקפה למשך 14 יום</b></p>
             </aside>
             { location.pathname.includes("/bh") ?
             <aside className="to">
@@ -87,7 +93,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
                 <p><b>ב.ח. לוחות חשמל</b></p>
                 <p>עוסק מורשה:<b>558562096</b></p>
                 <p>כתובת: <b>שד צה"ל 23, לוד</b></p>
-                <p>טלפון: <b><a href="tel:+9720507903256">0507903256</a> | <a href="tel:+9720522529613">0522529613</a></b></p>
+                <p>טלפון: <b><a href="tel:+9720507903256">0507903256</a></b></p>
                 <p>דוא"ל: <b><a href="mailto:bilalzinaty@gmail.com">bilalzinaty@gmail.com</a></b></p>
 
             </aside> :
@@ -105,14 +111,15 @@ const ComponentToPrint = forwardRef((props, ref) => {
         <div className="tableBS">
             <table className="tableBS">
                     <tr className="titles">
-                        <th>פירוט</th>
+                        <th>תיאור מוצר</th>
                         <th>מחיר יחידה</th>
                         <th>כמות</th>
                         <th>סה"כ</th>
                     </tr>
                 {
-                    arrayProduct && arrayProduct.map((item,i) => {        
-                        if(item.amount != 0)
+                    arrayProduct && arrayProduct.map((item,i) => {     
+                        // console.log("item", item, item.price != undefined, item.amount != 0);   
+                        if(item.price != undefined && item.amount != 0)
                         return(
                             <tr>
                                 <td><p>{item.name}</p></td>
@@ -153,21 +160,16 @@ const ComponentToPrint = forwardRef((props, ref) => {
                 <tr>
                     <td></td>
                     <td></td>
-                    <th scope ="row">{`מע"מ 17%:`}</th>
-                    <td>{((priceTotal - (priceTotal * discountDis / 100))*0.17).toFixed(2)}₪</td>
+                    <th scope ="row">{`מע"מ 18%:`}</th>
+                    <td>{((priceTotal - (priceTotal * discountDis / 100))*0.18).toFixed(2)}₪</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
                     <th scope ="row">{"מחיר סופי"}</th>
-                    <td>{(((priceTotal - (priceTotal * discountDis / 100)).toFixed(2))*1.17).toFixed(2)}₪</td>
+                    <td>{(((priceTotal - (priceTotal * discountDis / 100)).toFixed(2))*1.18).toFixed(2)}₪</td>
                 </tr>
             </table>
-            
-            <div className="footer">
-                <hr></hr>
-                <p><b>הערה:</b> ההצעה תקפה למשך 14 יום מיום יצירת ההצעה</p>
-            </div>
         </div>
     </div>
     </>
@@ -181,14 +183,7 @@ const BidStatic = () => {
         // onPrintError: (error) => {console.log(error)},
         documentTitle: "",
         contentRef:componentRef,
-        onBeforePrint: async() => {
-            const doc = document.getElementsByClassName("Doc")[0];
-            doc.style.direction =" rtl";
-        },
-        onAfterPrint: async() => {
-            const doc =document.getElementsByClassName("Doc")[0];
-            doc.style.direction =" rtl";
-        },
+        
     })
 
     return(

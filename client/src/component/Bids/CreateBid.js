@@ -15,49 +15,44 @@ const CreateBid = () => {
     const param = useParams();
     
     const init = async()=>{
-        console.log("useParams", param.id,location.pathname.includes("/zn") ? "zn" : "bh");
+        // console.log("useParams", param.id,location.pathname.includes("/zn") ? "zn" : "bh");
 
         if(param.id != 0){
             const data = await BidService.getB(param.id, location.pathname.includes("/zn") ? "zn" : "bh");
-            const bid =data.data;
-            console.log("bid",data)
+            const bid = data.data;
+            // console.log("bid",data)
             setInputID(bid.id);
             setInputCustomerID(bid.customer.id);
             setInputCustomerName(bid.customer.name)
             
-
             const data2 = await BidDetailsService.getBD(bid._id,location.pathname.includes("/zn") ? "zn" : "bh");
             const bidsDetails = data2.data;
-            console.log("bidsDetails", bidsDetails)
+            // console.log("bidsDetails", bidsDetails)
             if(data2.err){
                 alert("ההצעה הזאת אין בה מוצרים");
             }
             else{
                 let totalPriceW = 0;
                 setInputTotalPrice(0);
-                bidsDetails.map(async(bd) =>{
-                    console.log("bd", bd);
+                await bidsDetails.map(async(bd) =>{
+                    // console.log("bd", bd);
                     const data3 = await ProductService.getP(bd.idProduct, location.pathname.includes("/zn") ? "zn" : "bh");
                     const p = data3.data;
-                    console.log("bd p", bd.idProduct,p)
+                    // console.log("bd p", bid,p)
                     const id = p.id;
                     const name = p.name;
                     const price = p.price;
                     const amount = bd.amount;
-                    const totalPrice = (parseInt(p.price) * parseInt(bd.amount));
+                    const totalPrice = id ? (parseFloat(p.price) * parseFloat(bd.amount)) : 0;
+                    const dis = bid.discount?.dis || bid.discount || 0;
                     totalPriceW += totalPrice; 
                     setInputTotalPrice(totalPriceW);
-                    console.log("bd data",{id: id,name: name,price: price, amount: amount, totalPrice: totalPrice })
+                    setInputDiscount({dis: dis, price: totalPriceW * dis/100})
+                    setInputVAT(bid.vat);
+                    setInputFinishPrice(bid.finishPrice);
                     const data = {id: id,name: name,price: price, amount: amount, totalPrice: totalPrice };
                     setArrayProduct( arrayProduct => [...arrayProduct,data]);
                 });
-                
-                const dis = bid.discount.dis;
-                const price = bid.discount.price;
-                console.log("dis is " + dis, "price is " + price)
-                setInputDiscount({dis: dis, price: price});
-                setInputVAT(bid.vat);
-                setInputFinishPrice(bid.finishPrice);
             }
         }
     }
@@ -105,19 +100,7 @@ const CreateBid = () => {
 
 
     useEffect(()=>{
-        console.log("arrayProduct", arrayProduct);
-        // let allprice = 0;
-        // console.log()
-        // for(let i = 0; i < arrayProduct.length; i++){
-        //     allprice += parseInt(arrayProduct[i].totalPrice);
-        //     console.log("allprice",allprice)
-        // }
-        // setInputTotalPrice(allprice);
-        // const vat = (parseInt(allprice) *0.17);
-        // setInputVAT(vat.toFixed(2)); 
-        // const disMoney = allprice - parseInt(inputFinishPrice) + vat.toFixed(2);
-        // const dis = (1-(parseInt(inputFinishPrice)+vat.toFixed(2))/1000) * 100;
-        // setInputDiscount({dis: dis, price: disMoney})
+        // console.log("arrayProduct", arrayProduct);
     },[arrayProduct]);
     const [inputTotalPrice, setInputTotalPrice] = useState(0);
     const [inputDiscount, setInputDiscount] = useState({dis: 0, price:0});
@@ -125,12 +108,9 @@ const CreateBid = () => {
     const [inputFinishPrice, setInputFinishPrice ] = useState(0)
     const getAllProduct = async()=>{
         setProducts([]);
-        console.log("get all product");
         try{
             setIsLoading(true);
-            console.log("get all url");
             let c = await ProductService.getP(null, location.pathname.includes("/zn") ? "zn" : "bh");
-            console.log("get all url out");
             c.data.map((item) => {
                 
                 const id = item.id;
@@ -152,10 +132,10 @@ const CreateBid = () => {
         console.log("get all Bid");
         try{
             setIsLoading(true);
-            console.log("get all url");
+            // console.log("get all url");
             let c = await BidService.getB(null, location.pathname.includes("/zn")? "zn" : "bh");
-            console.log("get all url out");
-            console.log("data",c.data);
+            // console.log("get all url out");
+            // console.log("data",c.data);
             setIsLoading(false);
         }
         catch(err){
@@ -163,7 +143,7 @@ const CreateBid = () => {
         }
     }
 
-    useEffect(()=>{console.log("log products and bids",products, bids);} , [products, bids]);
+    useEffect(()=>{/*console.log("log products and bids",products, bids);*/} , [products, bids]);
 
     
 
@@ -196,7 +176,7 @@ const CreateBid = () => {
         else{
             result = await BidService.updateB(param.id,data);
         }
-        console.log("resulttttt",result);
+        // console.log("resulttttt",result);
         if(result.err){
             if(param.id == 0)
                 alert("שגיאה בעית שמירת הצעה")
@@ -209,7 +189,7 @@ const CreateBid = () => {
 
         const dataT = await BidService.getB(inputID, location.pathname.includes("/zn") ? "zn" : "bh");
         const bid2 = dataT.data;
-        console.log("bid2", bid2.discount)
+        // console.log("bid2", bid2.discount)
         // remove past product
         await BidDetailsService.deleteBD(bid2._id, location.pathname.includes("/zn")? "zn" : "bh");
         //save price
@@ -224,9 +204,11 @@ const CreateBid = () => {
             TotalPrice: item.totalPrice,
             from: location.pathname.includes("/zn") ? "zn" : "bh"
         }
+
         let result = await BidDetailsService.createBD(data2);
         setIsLoading(false);
         if(result.err){
+            // console.log("result.err", result);
             alert("שגיאה בעית שמירת פריטי ההצעה")
             return;
         }
@@ -239,11 +221,11 @@ const CreateBid = () => {
     const [results, setResults] = useState(products);
     const [selectedProduct, setSelectedProduct] = useState();
     
-    useEffect(()=>{ console.log("selectedProduct", selectedProduct)},[selectedProduct])
+    // useEffect(()=>{ console.log("selectedProduct", selectedProduct)},[selectedProduct])
     const handleChange = (e) => {
         const { target } = e;
         if (!target.value.trim()) return setResults(products);
-        console.log("results change", products)
+        // console.log("results change", products)
         const filteredValue = products.filter((p) =>
             p.name.includes(target.value)
         );
@@ -255,7 +237,7 @@ const CreateBid = () => {
 
         let b = true;
         if(!selectedProduct){
-            console.log("this product is in bid");
+            // console.log("this product is in bid");
             alert("בחר פריט");
             return;
         }
@@ -268,22 +250,21 @@ const CreateBid = () => {
 
         if(!b)
         {
-            console.log("this product is in bid");
+            // console.log("this product is in bid");
             alert("הפריט שבחרת הוא כבר בהצעה");
             return;
         }
-        const id = selectedProduct?.id;
-        const name = selectedProduct?.name;
-        const price = selectedProduct?.price;
-        const data = {id: id,name: name,price: price, amount: 0, totalPrice: 0 };
+        const {id, name, price} = selectedProduct
+        const data = {id: id,name: name,price: price, amount: 1, totalPrice: 0 };
         setArrayProduct( arrayProduct => [...arrayProduct,data]);
+        setSelectedProduct(null)
     }
 
     const Calc = (i,e) => {
-        console.log("befor arrayProduct", arrayProduct);
-        arrayProduct[i].amount = e.target.value == "" ? 0 : parseInt(e.target.value);
-        arrayProduct[i].totalPrice = (parseInt(arrayProduct[i].amount) * parseInt(arrayProduct[i].price));
-        console.log("after arrayProduct", arrayProduct);
+        // console.log("befor arrayProduct", arrayProduct);
+        arrayProduct[i].amount = e.target.value == ""  || e.target.value <= 0 ? 1 : parseInt(e.target.value);
+        arrayProduct[i].totalPrice = (parseFloat(arrayProduct[i].amount) * parseFloat(arrayProduct[i].price));
+        // console.log("after arrayProduct", arrayProduct);
         
 
         setArrayProduct( arrayProduct => [...arrayProduct]);
@@ -292,10 +273,11 @@ const CreateBid = () => {
     }
 
     const pricesChange = ({dis = 0}) => {
-        console.log("pricesChange",arrayProduct)
+
+        // console.log("pricesChange",arrayProduct)
         let allprice = 0;
 
-        arrayProduct.map(item => {allprice += parseInt(item.totalPrice)});
+        arrayProduct.map(item => {allprice += parseFloat(item.totalPrice) != NaN ? parseFloat(item.totalPrice) : 0});
 
         setInputTotalPrice(allprice);
 
@@ -303,18 +285,19 @@ const CreateBid = () => {
         let price = 0;
         
         if(dis != 0){
+            // console.log("allprice", allprice)
             price = allprice * dis / 100;
-            console.log("dis", {dis:dis, price: price});
-            setInputDiscount({dis: dis, price: price})
+            // console.log("dis", {dis:dis, price: allprice * dis / 100});
+            setInputDiscount({dis: dis, price: allprice * dis / 100})
         }
-        const vat = (allprice - price) * 0.17;
+        const vat = (allprice - price) * 0.18;
         setInputVAT(vat.toFixed(2));
 
         setInputFinishPrice((allprice - price + vat).toFixed(2));
     }
      
     useEffect(()=>{
-        console.log("inputs", inputTotalPrice, inputDiscount, inputVAT, inputFinishPrice )
+        // console.log("inputs", inputTotalPrice, inputDiscount, inputVAT, inputFinishPrice )
     },[inputTotalPrice, inputDiscount, inputVAT, inputFinishPrice])
 
     const putFromArray = async(iid) => {
@@ -328,7 +311,7 @@ const CreateBid = () => {
                 ap.price = 0; ap.amount = 0;ap.totalPrice=0;
             }
             });
-        console.log("pp",pp);
+        // console.log("pp",pp);
         await setArrayProduct(pp);
         pricesChange({dis: inputDiscount.dis});
     }
@@ -372,7 +355,7 @@ const CreateBid = () => {
                 </tr>
                 <tr>
                     <th>מע"מ</th>
-                    <th><label>17%</label></th>
+                    <th><label>18%</label></th>
                     <th><label>{inputVAT}₪</label></th>
                 </tr>
                 <tr>
@@ -399,15 +382,16 @@ const CreateBid = () => {
             <tbody>
             {
             arrayProduct && arrayProduct.map((item,i) => {
+                    if(!item.id) return;
                     return(
-                    <tr>
-                    <th scope ="row" data-th="#">{i + 1}</th>
-                    <td data-th="קוד פריט">{item.id}</td>
-                    <td data-th="תיאור פריט">{item.name}</td>
-                    <td data-th="מחיר ליחידה">{item.price}₪</td>
-                    <td data-th="כמות"><input type="text" value={item.amount} onChange={(e)=>{Calc(i,e)}}></input></td>
-                    <td data-th="סה''כ"><label>{item.totalPrice}₪</label></td>
-                    <td><button onClick={()=>{putFromArray(item.id)}}>x</button></td>
+                    <tr key={i}>
+                        <th scope ="row" data-th="#">{i + 1}</th>
+                        <td data-th="קוד פריט">{item.id}</td>
+                        <td data-th="תיאור פריט">{item.name}</td>
+                        <td data-th="מחיר ליחידה">{item.price}₪</td>
+                        <td><input style={{width:"40px"}} type="number" min={1} value={item.amount} onChange={(e)=>{Calc(i,e)}}></input></td>
+                        <td data-th="סה''כ"><label>{item.totalPrice}₪</label></td>
+                        <td><button onClick={()=>{putFromArray(item.id)}}>x</button></td>
                     </tr>)
                 })
             }
